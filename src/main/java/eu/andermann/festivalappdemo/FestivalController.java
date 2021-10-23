@@ -5,6 +5,7 @@ import eu.andermann.festivalappdemo.services.FestivalService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -19,7 +20,7 @@ public class FestivalController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{festivalId}")
-    public void addBandToFestival(@PathVariable UUID festivalId, @RequestBody Band band) {
-        service.addNewBandToFestival(festivalId, band);
+    public void addBandToFestival(@PathVariable UUID festivalId, @RequestBody List<Band> bands) {
+        service.addNewBandToFestival(festivalId, bands);
     }
 }

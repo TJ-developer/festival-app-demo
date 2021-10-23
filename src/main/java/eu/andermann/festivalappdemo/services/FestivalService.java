@@ -6,6 +6,7 @@ import eu.andermann.festivalappdemo.repositories.FestivalRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -20,10 +21,10 @@ public class FestivalService {
     }
 
     @Transactional
-    public void addNewBandToFestival(UUID festivalId, Band band) {
+    public void addNewBandToFestival(UUID festivalId, List<Band> bands) {
         var festival = festivalRepository.findById(festivalId);
-        festival.orElseThrow(() -> new IllegalArgumentException("Festival with given id not found.")).addBand(band);
-        bandRepository.save(band);
+        festival.orElseThrow(() -> new IllegalArgumentException("Festival with given id not found.")).addBands(bands);
+        bandRepository.saveAll(bands);
         festivalRepository.save(festival.get());
     }
 

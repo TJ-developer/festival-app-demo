@@ -17,8 +17,8 @@ public class Festival {
     @OneToMany(fetch = FetchType.EAGER)
     private List<Band> bands;
 
-    public void addBand(Band band) {
-        this.bands.add(band);
+    public void addBands(List<Band> bands) {
+        this.bands.addAll(bands);
     }
 
 }

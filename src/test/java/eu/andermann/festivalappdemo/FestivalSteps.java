@@ -26,10 +26,22 @@ public class FestivalSteps implements En {
     FestivalService service;
 
     UUID festivalId;
-    String json = """
-            {
-                "name": "Metallica"
-            }""";
+    String oneBandJson = """
+            [
+                {
+                    "name": "Metallica"
+                }
+            ]""";
+
+    String multipleBandsJson = """
+            [
+                {
+                    "name": "Sabaton"
+                },
+                {
+                    "name": "Five Finger Death Punch"
+                }
+            ]""";
 
     public FestivalSteps() {
         Given("ein Festival", () -> {
@@ -41,7 +53,7 @@ public class FestivalSteps implements En {
         When("eine Band zu dem Festival hinzugefügt wird", () -> mockMvc.perform(
                         post("/festival/" + festivalId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(json)
+                                .content(oneBandJson)
                 )
                 .andExpect(status().isCreated()));
 
@@ -51,6 +63,23 @@ public class FestivalSteps implements En {
             assertEquals(1, savedFestival.get().getBands().size());
             var band = savedFestival.get().getBands().get(0);
             assertEquals("Metallica", band.getName());
+        });
+
+        When("^mehrere Bands zu dem Festival hinzugefügt wird$", () -> mockMvc.perform(
+                        post("/festival/" + festivalId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(multipleBandsJson)
+                )
+                .andExpect(status().isCreated()));
+
+        Then("^wurden die Bands zum Festival hinzugefügt\\.$", () -> {
+            var savedFestival = festivalRepository.findById(festivalId);
+            assertTrue(savedFestival.isPresent());
+            assertEquals(2, savedFestival.get().getBands().size());
+            var bands = savedFestival.get().getBands();
+            assertTrue(bands.stream()
+                    .allMatch(band -> band.getName().equals("Sabaton")
+                            || band.getName().equals("Five Finger Death Punch")));
         });
     }
 }
