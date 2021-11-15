@@ -65,7 +65,7 @@ public class FestivalSteps implements En {
             assertEquals("Metallica", band.getName());
         });
 
-        When("^mehrere Bands zu dem Festival hinzugefügt wird$", () -> mockMvc.perform(
+        When("^mehrere Bands zu dem Festival hinzugefügt werden$", () -> mockMvc.perform(
                         post("/festival/" + festivalId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(multipleBandsJson)
