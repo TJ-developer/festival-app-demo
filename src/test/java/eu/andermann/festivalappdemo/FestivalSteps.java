@@ -1,5 +1,6 @@
 package eu.andermann.festivalappdemo;
 
+import eu.andermann.festivalappdemo.domain.Band;
 import eu.andermann.festivalappdemo.domain.Festival;
 import eu.andermann.festivalappdemo.repositories.FestivalRepository;
 import eu.andermann.festivalappdemo.services.FestivalService;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -26,7 +28,7 @@ public class FestivalSteps implements En {
     FestivalService service;
 
     UUID festivalId;
-    String oneBandJson = """
+    String metallicaJson = """
             [
                 {
                     "name": "Metallica"
@@ -43,6 +45,14 @@ public class FestivalSteps implements En {
                 }
             ]""";
 
+    String kissJson = """
+            [
+                {
+                    "name": "KISS"
+                }
+            ]
+            """;
+
     public FestivalSteps() {
         Given("ein Festival", () -> {
             var festival = new Festival();
@@ -53,7 +63,7 @@ public class FestivalSteps implements En {
         When("eine Band zu dem Festival hinzugefügt wird", () -> mockMvc.perform(
                         post("/festival/" + festivalId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(oneBandJson)
+                                .content(metallicaJson)
                 )
                 .andExpect(status().isCreated()));
 
@@ -61,8 +71,8 @@ public class FestivalSteps implements En {
             var savedFestival = festivalRepository.findById(festivalId);
             assertTrue(savedFestival.isPresent());
             assertEquals(1, savedFestival.get().getBands().size());
-            var band = savedFestival.get().getBands().get(0);
-            assertEquals("Metallica", band.getName());
+            var bands = savedFestival.get().getBands();
+            assertTrue(bands.contains(new Band("Metallica")));
         });
 
         When("^mehrere Bands zu dem Festival hinzugefügt werden$", () -> mockMvc.perform(
@@ -80,6 +90,28 @@ public class FestivalSteps implements En {
             assertTrue(bands.stream()
                     .allMatch(band -> band.getName().equals("Sabaton")
                             || band.getName().equals("Five Finger Death Punch")));
+        });
+
+        Given("^ein Festival mit der Band KISS$", () -> {
+            var festival = new Festival();
+            festival.setName("Download Festival");
+            var kissBand = new Band();
+            kissBand.setName("KISS");
+            festivalId = festivalRepository.save(festival).getId();
+            service.addNewBandToFestival(festivalId, List.of(kissBand));
+        });
+        When("^die Band KISS hinzugefügt wird$", () -> mockMvc.perform(
+                        post("/festival/" + festivalId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(kissJson)
+                )
+                .andExpect(status().is2xxSuccessful()));
+        Then("^wurde die Band nicht erneut hinzugefügt\\.$", () -> {
+            var savedFestival = festivalRepository.findById(festivalId);
+            assertTrue(savedFestival.isPresent());
+            assertEquals(1, savedFestival.get().getBands().size());
+            var bands = savedFestival.get().getBands();
+            assertTrue(bands.contains(new Band("KISS")));
         });
     }
 }

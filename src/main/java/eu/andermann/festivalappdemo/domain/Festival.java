@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -15,7 +16,7 @@ public class Festival {
     private UUID id;
     private String name;
     @OneToMany(fetch = FetchType.EAGER)
-    private List<Band> bands;
+    private Set<Band> bands;
 
     public void addBands(List<Band> bands) {
         this.bands.addAll(bands);

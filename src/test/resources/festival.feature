@@ -11,3 +11,8 @@
       Gegeben sei ein Festival
       Wenn mehrere Bands zu dem Festival hinzugefügt werden
       Dann wurden die Bands zum Festival hinzugefügt.
+
+    Szenario: Die selbe Band wird mehrmals zum Festival hinzugefügt.
+      Gegeben sei ein Festival mit der Band KISS
+      Wenn die Band KISS hinzugefügt wird
+      Dann wurde die Band nicht erneut hinzugefügt.
