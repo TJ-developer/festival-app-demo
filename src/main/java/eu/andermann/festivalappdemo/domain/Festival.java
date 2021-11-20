@@ -17,9 +17,14 @@ public class Festival {
     private String name;
     @OneToMany(fetch = FetchType.EAGER)
     private Set<Band> bands;
+    @OneToMany(fetch = FetchType.EAGER)
+    private Set<Stage> stages;
 
     public void addBands(List<Band> bands) {
         this.bands.addAll(bands);
     }
 
+    public void addStages(List<Stage> stages) {
+        this.stages.addAll(stages);
+    }
 }
